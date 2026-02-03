@@ -1,0 +1,35 @@
+/* Tùy chỉnh thanh cuộn cho bảng trên Mobile */
+table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* Tăng kích thước chữ cho dễ đọc trên điện thoại */
+@media (max-width: 768px) {
+  :root {
+    --vp-home-hero-name-font-size: 32px;
+    --vp-home-hero-text-font-size: 16px;
+    --vp-code-font-size: 14px;
+  }
+  
+  /* Căn chỉnh lề bài viết không bị sát mép quá */
+  .vp-doc {
+    padding: 0 4px;
+  }
+
+  /* Làm nổi bật các Alerts (Note/Tip/Warning) */
+  .custom-block {
+    border-radius: 8px;
+    margin: 16px 0;
+  }
+}
+
+/* Hiệu ứng đẹp cho Dark Mode */
+.dark .vp-doc h1, .dark .vp-doc h2 {
+  background: -webkit-linear-gradient(315deg, #42d392 25%, #647eff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
