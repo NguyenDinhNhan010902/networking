@@ -29,6 +29,10 @@ Bạn đã có Repository: `https://github.com/NguyenDinhNhan010902/networking.g
     *   Chọn **GitHub Actions**.
 4.  Ngay sau khi chọn xong, quay lại tab **Actions**, bạn sẽ thấy nó tự động chạy lại. Chờ 2 phút là xong.
 
+## XỬ LÝ SỰ CỐ (TROUBLESHOOTING)
+*   **Nếu chờ mãi không thấy chạy**: Hãy chạy lại file `deploy_now.bat` một lần nữa. Việc đẩy code mới lên sẽ ép GitHub phải làm việc.
+*   **Nếu thấy lỗi đỏ**: Bấm vào xem chi tiết và chụp ảnh gửi cho IT support (hoặc Chatbot).
+
 ---
 
 ## CÁCH 1: DÙNG GIT (NẾU BẠN MUỐN CÀI)
