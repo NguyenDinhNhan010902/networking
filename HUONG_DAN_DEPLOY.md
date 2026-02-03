@@ -19,12 +19,15 @@ Bạn đã có Repository: `https://github.com/NguyenDinhNhan010902/networking.g
 4.  Chờ nó upload xong (thanh màu xanh chạy hết).
 5.  Cuộn xuống dưới, mục **Commit changes**, nhấn nút xanh **Commit changes**.
 
-### Bước 3: Kích hoạt Web (GitHub Pages)
-1.  Vào tab **Settings** của Repository đó.
-2.  Menu bên trái, chọn **Pages**.
-3.  Tại mục **Build and deployment**:
-    *   Source: Chọn **GitHub Actions**.
-4.  Xong! Chờ 2 phút rồi F5 là có web.
+### Bước 3: Kích hoạt Web (QUAN TRỌNG NHẤT)
+⚠️ **Nếu không làm bước này, web sẽ không chạy!**
+
+1.  Vào tab **Settings** của Repository đó (trên web GitHub).
+2.  Menu bên trái, tìm mục **Pages** (gần cuối).
+3.  Tại phần **Build and deployment** > **Source**:
+    *   Bấm vào menu thả xuống (đang là *Deploy from a branch*).
+    *   Chọn **GitHub Actions**.
+4.  Ngay sau khi chọn xong, quay lại tab **Actions**, bạn sẽ thấy nó tự động chạy lại. Chờ 2 phút là xong.
 
 ---
 
