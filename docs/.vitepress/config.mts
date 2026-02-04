@@ -24,14 +24,16 @@ export default defineConfig({
                             text: '1. Lý thuyết Cốt lõi',
                             collapsed: false,
                             items: [
-                                { text: 'Tổng quan & Giao thức', link: '/mang-may-tinh/ly-thuyet/cot-loi' }
+                                { text: 'Tổng quan & Giao thức', link: '/mang-may-tinh/ly-thuyet/cot-loi' },
+                                { text: 'NAT & Port Forwarding', link: '/mang-may-tinh/nat-port-forwarding' }
                             ]
                         },
                         {
                             text: '2. Thực chiến Công việc',
                             collapsed: false,
                             items: [
-                                { text: 'Cẩm nang & Tool', link: '/mang-may-tinh/thuc-chien/cam-nang' }
+                                { text: 'Cẩm nang & Tool', link: '/mang-may-tinh/thuc-chien/cam-nang' },
+                                { text: 'Cấu hình Public IP & Port Forwarding', link: '/mang-may-tinh/thuc-chien/cau-hinh-public-ip-port-forwarding' }
                             ]
                         },
                         {

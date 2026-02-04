@@ -98,59 +98,96 @@ tracert 8.8.8.8
 
 ## BÀI 3: PING router OK, PING 8.8.8.8 OK, NHƯNG KHÔNG VÀO WEB ĐƯỢC
 
-### 1. Phân tích loại trừ (Senior Mindset)
+Đây là **TÓM TẮT CASE** kinh điển.
 
-Bạn nghi OSI layer nào đầu tiên? Nhiều người hay đoán mò là "ISP chặn IP/MAC". Hãy xem xét:
+### 1. Hiện tượng
+*   ✅ Ping router OK
+*   ✅ Ping 8.8.8.8 OK
+*   ❌ Không vào được website (trình duyệt báo lỗi)
 
-**🔴 Chặn MAC** -> **Layer 2 – Data Link**
-*   Thường xảy ra trong: Mạng nội bộ, Captive Portal, Nhà mạng khóa MAC modem.
-*   📌 **Nhưng**: MAC KHÔNG ĐI RA INTERNET. ISP ngoài Internet không thể chặn MAC của máy bạn được.
+👉 **Kết luận sớm**:
+*   **Network KHÔNG hỏng** (Layer 1–3 OK).
+*   Vấn đề nằm từ **Layer 4 trở lên**, chủ yếu **Layer 7**.
 
-**🔴 Chặn IP** -> **Layer 3 – Network**
-*   ISP có thể: Block IP, Chặn route, Chặn ICMP/TCP.
+### 2. 🧱 PHÂN TÍCH THEO OSI (từ dưới lên – chuẩn đi làm)
 
-**🧠 QUAN TRỌNG NHẤT: QUAY LẠI TRIỆU CHỨNG**
-*   Ping router được.
-*   Ping 8.8.8.8 được.
-*   ❌ Không vào được website.
+#### ✅ Layer 1 – Physical
+*   Có sóng Wi-Fi / link Ethernet.
+*   Không đứt cáp.
+*   👉 **OK**.
 
-👉 **Điều này nói lên**:
-*   ✅ Layer 3 OK (IP OK, Routing OK, ISP KHÔNG chặn IP).
+#### ✅ Layer 2 – Data Link
+*   Kết nối router thành công.
+*   MAC hoạt động.
+*   👉 **OK**.
 
-### 2. 🎯 Layer nghi ngờ ĐÚNG NHẤT trong tình huống này
+#### ✅ Layer 3 – Network
+*   Ping 8.8.8.8 OK.
+*   Routing + NAT hoạt động.
+*   ISP không chặn IP.
+*   👉 **OK tuyệt đối**.
+*   📌 *Đây là chỗ rất nhiều người đổ lỗi nhầm cho ISP, nhưng case này loại ISP khỏi nghi ngờ.*
 
-**🟢 Layer 7 – Application**
-Các nguyên nhân thực tế:
-*   ❌ **DNS sai**.
-*   ❌ **DNS bị hijack**.
-*   ❌ **HTTPS / SSL lỗi** (Sai giờ hệ thống).
-*   ❌ **Proxy / VPN**.
-*   ❌ **Firewall chặn port 443**.
+#### 🟡 Layer 4 – Transport (có thể, nhưng ít hơn)
+*   Có thể xảy ra: Firewall chặn TCP 80 / 443, Proxy / VPN làm lỗi handshake TCP.
+*   👉 Nhưng nếu TCP bị chặn, browser thường báo: `ERR_CONNECTION_TIMED_OUT` hoặc `Unable to connect`.
 
-### 3. 🛠 Senior sẽ kiểm tra gì trước?
+#### 🔴 Layer 7 – Application (90% case thực tế)
+*   Đây là **trung tâm của vấn đề**.
 
-**1️⃣ Test DNS**
-```bash
-nslookup google.com
+### 3. 🔥 CÁC NGUYÊN NHÂN THỰC TẾ (theo xác suất)
+
+#### 🥇 1. DNS lỗi (NGUYÊN NHÂN SỐ 1)
+*   **Vì sao?** Ping IP dùng địa chỉ số, còn vào web cần: `google.com → DNS → IP → TCP → HTTPS`.
+*   👉 **DNS hỏng → không vào web**.
+*   **Dấu hiệu**: Ping 8.8.8.8 OK nhưng Ping google.com ❌. Browser báo: `DNS_PROBE_FINISHED` hoặc `Server DNS not responding`.
+*   **Fix nhanh**:
+    ```bash
+    ipconfig /flushdns
+    ```
+    Hoặc đổi DNS thành `8.8.8.8` / `1.1.1.1`.
+
+#### 🥈 2. HTTPS / SSL lỗi
+*   **Vì sao?** Web hiện nay gần như 100% dùng HTTPS. SSL handshake lỗi → không load trang.
+*   **Nguyên nhân**: Giờ hệ thống sai, Certificate hết hạn, Antivirus chặn HTTPS, Proxy chặn SSL.
+*   **Dấu hiệu**: Ping OK, DNS OK, nhưng Browser báo: `SSL_ERROR` hoặc `ERR_CERT_AUTHORITY_INVALID`.
+
+#### 🥉 3. Proxy / VPN / Antivirus
+*   **Vì sao?** Ping không đi qua proxy, nhưng Browser bắt buộc qua proxy.
+*   👉 Nên: Ping OK nhưng Web chết.
+*   **Cách test**: Tắt VPN, Tắt proxy, Mở Incognito.
+
+#### 4️⃣ Firewall chặn port 80 / 443
+*   Ít gặp hơn nhưng có (Firewall nội bộ, Antivirus).
+*   **Test**: `telnet google.com 443`
+
+### 4. 🧭 SƠ ĐỒ ĐƯỜNG ĐI (rất quan trọng)
+```scss
+PING 8.8.8.8
+→ ICMP
+→ Layer 3 OK
+
+VÀO WEB
+→ DNS (L7)
+→ TCP 443 (L4)
+→ TLS (L7)
+→ HTTP (L7)
 ```
+👉 Chỉ cần 1 bước trên lỗi là web không vào.
 
-**2️⃣ Thử truy cập bằng IP**
-```text
-https://142.250.xxx.xxx
-```
+### 5. 🛠 CHECKLIST DEBUG (chuẩn đi làm)
+1.  **Ping domain**: `ping google.com`
+2.  **Test DNS**: `nslookup google.com`
+3.  **Test HTTPS**: `curl https://google.com`
+4.  **Test browser khác / Incognito**
 
-**3️⃣ Kiểm tra port 443**
-```bash
-telnet google.com 443
-```
+### 6. 🧠 CÂU TRẢ LỜI “ĂN ĐIỂM” NHẤT
+Nếu ai hỏi bạn case này, trả lời:
+> “Layer 1–3 đã OK vì ping IP được. Khả năng cao lỗi Layer 7, thường là DNS hoặc HTTPS/SSL. Kiểm tra DNS trước, sau đó SSL và proxy.”
 
-### 🧠 Bảng sửa lỗi tư duy
-| Suy nghĩ | Chỉnh lại |
-| :--- | :--- |
-| ISP chặn MAC | ❌ MAC không ra Internet |
-| ISP chặn IP | ❌ Nếu ping 8.8.8.8 được thì IP không bị chặn |
-| Không vào web = ISP | ❌ 80% là DNS / HTTPS |
-| Layer 7 = mạng | ❌ Layer 7 = ứng dụng |
+👉 Câu này là chuẩn senior.
+
+> **💬 Nói thật với bạn**: Nếu bạn hiểu sâu case này, thì bạn có thể debug backend API, fix lỗi deploy, làm việc với DevOps/Infra mà không còn sợ network nữa.
 
 ---
 
@@ -181,3 +218,56 @@ telnet google.com 443
 **Chốt lại**:
 *   **Lỗi**: Đúng là do DNS không phân giải được Domain sang IP.
 *   **Cách khắc phục**: Điền IP của DNS Server (như 8.8.8.8) để máy tính có "cuốn từ điển" tra cứu.
+
+---
+
+## BÀI 5: CURL API OK, NHƯNG BROWSER GỌI API LỖI CORS
+
+Câu cuối – chuẩn Dev / Backend / Infra.
+
+### 1. Tình huống
+*   Gửi request bằng `curl` hoặc Postman -> ✅ **OK**.
+*   Trình duyệt (Browser) gọi API -> ❌ **Lỗi CORS**.
+
+### 2. Phân tích thực chiến
+
+#### 🔴 OSI layer nào?
+**Đáp án: Layer 7 – Application.**
+
+*   **Tại sao?**
+    *   API chạy bình thường (`curl` OK).
+    *   Mạng không lỗi (Network OK).
+    *   Chỉ browser bị chặn.
+    *   **Kết luận**: CORS là chính sách bảo mật của **Trình duyệt (Browser Policy)**. Nó không liên quan đến TCP/IP, không phải do Firewall hay ISP chặn.
+
+#### 🛠 Fix ở đâu?
+Đây là câu hỏi phân loại trình độ rất rõ ràng.
+
+*   ❌ **Fix sai (Junior mindset)**:
+    *   Sửa code Frontend.
+    *   Cài plugin tắt CORS trên trình duyệt.
+    *   Dùng proxy tạm bợ để bypass.
+
+*   ✅ **Fix đúng (Production mindset)**:
+    *   **Backend**.
+    *   Backend cần thêm cấu hình để trả về các **Headers** cho phép:
+    ```http
+    Access-Control-Allow-Origin: * (hoặc domain cụ thể)
+    Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+    Access-Control-Allow-Headers: Content-Type, Authorization
+    ```
+
+### 3. Câu trả lời "ăn điểm" phỏng vấn
+> "Đây là lỗi Layer 7. CORS là cơ chế bảo mật của trình duyệt. Dù `curl` chạy được chứng tỏ Network và Server ổn, nhưng Browser chặn vì thiếu Header cho phép. Em sẽ cấu hình lại Response Headers ở phía Backend."
+
+### 🏁 Đánh giá năng lực
+(Nếu bạn trả lời đúng như trên)
+
+| Tiêu chí | Đánh giá |
+| :--- | :--- |
+| **OSI tư duy** | ✅ Tốt (Biết lỗi do Browser/App) |
+| **Debug thực tế** | ✅ Tốt (Phân biệt được môi trường) |
+| **Phân biệt Net/App** | ✅ Rõ ràng |
+| **Sẵn sàng đi làm** | ✅ **CÓ (Mid-level+)** |
+
+👉 Bạn không học vẹt lý thuyết. Bạn đang có tư duy của người làm **sản phẩm thật**.
