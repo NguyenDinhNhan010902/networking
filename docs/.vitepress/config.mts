@@ -78,5 +78,19 @@ export default defineConfig({
             message: 'Học tập không ngừng nghỉ.',
             copyright: 'Copyright © 2024'
         }
+    },
+    vite: {
+        server: {
+            proxy: {
+                '/api/tts': {
+                    target: 'https://translate.google.com',
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/tts/, '/translate_tts'),
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    }
+                }
+            }
+        }
     }
 })
