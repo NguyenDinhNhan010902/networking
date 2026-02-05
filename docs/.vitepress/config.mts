@@ -11,11 +11,23 @@ export default defineConfig({
         nav: [
             { text: 'Trang chủ', link: '/' },
             { text: 'Mạng Máy Tính', link: '/mang-may-tinh/' },
+            { text: 'Linux Server', link: '/linux-server/' },
             { text: 'Lập Trình', link: '/lap-trinh/' }
         ],
 
         sidebar: {
             '/mang-may-tinh/': [
+                {
+                    text: 'Series: TCP/IP Cốt Lõi',
+                    collapsed: false,
+                    items: [
+                        { text: 'Bài 1: Kiến trúc & Đóng gói', link: '/mang-may-tinh/tcp-ip/bai-1-kien-truc-tcp-ip' },
+                        { text: 'Bài 2: IPv4 & Subnet Mask', link: '/mang-may-tinh/tcp-ip/bai-2-ipv4-subnet' },
+                        { text: 'Bài 3: TCP Deep Dive', link: '/mang-may-tinh/tcp-ip/bai-3-tcp-deep-dive' },
+                        { text: 'Bài 4: ARP, DHCP, ICMP', link: '/mang-may-tinh/tcp-ip/bai-4-arp-dhcp-icmp' },
+                        { text: 'Bài 5: Wireshark Analysis', link: '/mang-may-tinh/tcp-ip/bai-5-wireshark' }
+                    ]
+                },
                 {
                     text: 'Kiến Thức Lý Thuyết',
                     collapsed: false,
@@ -53,6 +65,14 @@ export default defineConfig({
                     items: [
                         { text: 'Bộ câu hỏi tư duy', link: '/mang-may-tinh/phong-van/cau-hoi' },
                         { text: 'Case Study Thực Tế', link: '/mang-may-tinh/phong-van/tinh-huong-thuc-te' }
+                    ]
+                }
+            ],
+            '/linux-server/': [
+                {
+                    text: 'Linux & Server',
+                    items: [
+                        { text: 'Cài đặt Ubuntu Server', link: '/linux-server/' }
                     ]
                 }
             ],
