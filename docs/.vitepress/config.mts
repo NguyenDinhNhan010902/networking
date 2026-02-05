@@ -72,7 +72,8 @@ export default defineConfig({
                 {
                     text: 'Linux & Server',
                     items: [
-                        { text: 'Cài đặt Ubuntu Server', link: '/linux-server/' }
+                        { text: 'Cài đặt Ubuntu Server', link: '/linux-server/' },
+                        { text: 'Phân tích Trạng thái Hệ thống', link: '/linux-server/phan-tich-trang-thai-he-thong' }
                     ]
                 }
             ],
