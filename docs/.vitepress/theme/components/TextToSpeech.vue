@@ -11,6 +11,7 @@ const isPaused = ref(false)
 const rate = ref(1.0)
 const playingSectionId = ref('')
 const errorMsg = ref('')
+const isCollapsed = ref(false) // State cho tính năng thu gọn
 
 // Native Logic vars
 const currentUtterance = ref(null)
@@ -279,13 +280,19 @@ watch(() => route.path, () => {
     <audio ref="audioRef" id="tts-audio-hidden" style="display:none;" @ended="onAudioEnded" @error="onAudioError"></audio>
   
     <div class="tts-header">
-        <span class="tts-title">🎧 Đọc bài viết (v2.0)</span>
-        <span v-if="isSpeaking || isPaused" class="tts-badge" :class="{ paused: isPaused }">
-            {{ isPaused ? '⏸ Tạm dừng' : '▶ Đang đọc...' }}
-        </span>
+        <div class="header-left">
+            <button @click="isCollapsed = !isCollapsed" class="toggle-btn" :title="isCollapsed ? 'Mở rộng' : 'Thu gọn'">
+                {{ isCollapsed ? '➕' : '➖' }}
+            </button>
+            <span class="tts-title">🎧 Đọc bài viết (v2.0)</span>
+            <span v-if="isSpeaking || isPaused" class="tts-badge" :class="{ paused: isPaused }">
+                {{ isPaused ? '⏸ Tạm dừng' : '▶ Đang đọc...' }}
+            </span>
+        </div>
     </div>
     
-    <div class="tts-controls">
+    <div v-show="!isCollapsed" class="tts-body">
+        <div class="tts-controls">
         <select v-model="selectedVoiceURI" class="voice-select">
             <option v-for="v in voices" :key="v.voiceURI" :value="v.voiceURI">
                 {{ v.name.length > 30 ? v.name.substring(0, 30) + '...' : v.name }}
@@ -305,10 +312,11 @@ watch(() => route.path, () => {
         <button v-if="isSpeaking || isPaused" @click="stop" class="tts-btn stop">⏹ Dừng</button>
         
         <button @click="testSound" class="tts-btn test" title="Kiểm tra loa">🔔 Test</button>
-    </div>
-    
-    <div class="tts-hint">
-        *Mẹo: Chọn "Google Tiếng Việt" nếu máy không đọc được. Dùng nút 🔊 để nghe từng mục.
+        </div>
+        
+        <div class="tts-hint">
+            *Mẹo: Chọn "Google Tiếng Việt" nếu máy không đọc được. Dùng nút 🔊 để nghe từng mục.
+        </div>
     </div>
     <div v-if="errorMsg" class="tts-error">⚠️ {{ errorMsg }}</div>
   </div>
@@ -346,8 +354,12 @@ watch(() => route.path, () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
+
+.header-left { display: flex; align-items: center; gap: 8px; }
+.toggle-btn { background: none; border: none; cursor: pointer; font-size: 1.1em; opacity: 0.7; transition: opacity 0.2s; padding: 0 4px; }
+.toggle-btn:hover { opacity: 1; transform: scale(1.1); }
 
 .tts-title { font-weight: 600; font-size: 1rem; }
 .tts-badge { font-size: 0.75rem; background: var(--vp-c-brand); color: white; padding: 2px 8px; border-radius: 12px; }

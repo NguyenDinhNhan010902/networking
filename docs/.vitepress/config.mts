@@ -24,7 +24,15 @@ export default defineConfig({
                         { text: 'Bài 1: Kiến trúc & Đóng gói', link: '/mang-may-tinh/tcp-ip/bai-1-kien-truc-tcp-ip' },
                         { text: 'Bài 2: IPv4 & Subnet Mask', link: '/mang-may-tinh/tcp-ip/bai-2-ipv4-subnet' },
                         { text: 'Bài 3: TCP Deep Dive', link: '/mang-may-tinh/tcp-ip/bai-3-tcp-deep-dive' },
-                        { text: 'Bài 4: ARP, DHCP, ICMP', link: '/mang-may-tinh/tcp-ip/bai-4-arp-dhcp-icmp' },
+                        {
+                            text: 'Bài 4: ARP, DHCP, ICMP',
+                            collapsed: true,
+                            items: [
+                                { text: '4.1: Lý thuyết Hạ tầng', link: '/mang-may-tinh/tcp-ip/bai-4-1-ly-thuyet' },
+                                { text: '4.2: Lab 01 - Troubleshooting', link: '/mang-may-tinh/tcp-ip/bai-4-2-lab-thuc-chien' }
+                            ]
+                        },
+
                         { text: 'Bài 5: Wireshark Analysis', link: '/mang-may-tinh/tcp-ip/bai-5-wireshark' }
                     ]
                 },
@@ -36,8 +44,10 @@ export default defineConfig({
                         { text: 'Mô hình OSI', link: '/mang-may-tinh/mo-hinh-osi' },
                         { text: 'NAT & Port Forwarding', link: '/mang-may-tinh/nat-port-forwarding' },
                         { text: 'Hạ tầng mạng (L1-L3)', link: '/mang-may-tinh/phan-1-ly-thuyet' },
+                        { text: 'DNS & Default Gateway', link: '/mang-may-tinh/ly-thuyet/dns-va-gateway' },
                         { text: 'Giao vận mạng (L4-L7)', link: '/mang-may-tinh/phan-2-ly-thuyet' },
-                        { text: 'Ứng dụng mạng (L7)', link: '/mang-may-tinh/phan-3-ly-thuyet' }
+                        { text: 'Ứng dụng mạng (L7)', link: '/mang-may-tinh/phan-3-ly-thuyet' },
+
                     ]
                 },
                 {
@@ -73,7 +83,8 @@ export default defineConfig({
                     text: 'Linux & Server',
                     items: [
                         { text: 'Cài đặt Ubuntu Server', link: '/linux-server/' },
-                        { text: 'Phân tích Trạng thái Hệ thống', link: '/linux-server/phan-tich-trang-thai-he-thong' }
+                        { text: 'Phân tích Trạng thái Hệ thống', link: '/linux-server/phan-tich-trang-thai-he-thong' },
+                        { text: 'Kết nối SSH từ Windows (PowerShell)', link: '/linux-server/ssh-tu-windows' }
                     ]
                 }
             ],
