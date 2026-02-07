@@ -1,4 +1,4 @@
-# DNS & DEFAULT GATEWAY (CỔNG RA THẾ GIỚI)
+# DNS & DEFAULT GATEWAY: KIẾN THỨC CƠ BẢN
 
 Nội dung này tách biệt khỏi phần hạ tầng vì độ phức tạp và tầm quan trọng đặc biệt của nó trong thực tế đi làm.
 
@@ -61,18 +61,6 @@ Muốn gửi gói ra ngoài:
 5.  → Có MAC → mới gửi được.
 
 👉 **Hệ quả**: Gateway tồn tại nhưng **ARP chết** = Vẫn không đi đâu được.
-
-### 6️⃣ Case đi làm cực phổ biến
-**Case 1**:
-- Có IP.
-- Có Gateway.
-- Nhưng không ra Internet.
-
-👉 **Thường là**:
-- Gateway đúng IP.
-- Nhưng Gateway không biết đường đi tiếp (Route ra ngoài).
-- Hoặc NAT trên Gateway bị tắt.
-📌 *Hay gặp trong: VM, Docker, VPN.*
 
 ---
 
@@ -173,40 +161,92 @@ Muốn hỏi DNS:
 
 ---
 
-## 3. BẢNG TỔNG HỢP CHUẨN DEBUG
+## 3. DẤU HIỆU ĐIỂN HÌNH CỦA LỖI DNS
 
-| Hiện tượng | Thủ phạm chủ yếu |
-| :--- | :--- |
-| Không có IP | **DHCP** |
-| Có IP, không có Gateway | **DHCP** |
-| Ping Gateway fail | **ARP / LAN** |
-| Ping IP ngoài (8.8.8.8) fail | **Gateway / NAT** |
-| Ping IP OK, domain fail | **DNS** |
-| Curl IP OK, domain fail | **DNS** |
-| Browser fail, curl OK | **DNS Cache / CORS** |
+Thường gặp 1 hoặc nhiều dấu hiệu sau:
+
+❌ Vào web bằng tên miền không được (google.com)
+
+✅ Nhưng ping IP vẫn được (8.8.8.8)
+
+**Trình duyệt báo:**
+- `DNS_PROBE_FINISHED_NXDOMAIN`
+- `DNS server not responding`
+- `ERR_NAME_NOT_RESOLVED`
 
 ---
 
-## 4. BÀI LAB ÁP SÁT MÁY ẢO CỦA BẠN (SELF-CHECK)
+## 4. 🔍 CÁCH KIỂM TRA CHUẨN (THEO THỨ TỰ)
 
-Làm lần lượt các lệnh sau và tự trả lời:
+### 1️⃣ Kiểm tra mạng có hoạt động không
+Mở CMD / PowerShell:
+```powershell
+ping 8.8.8.8
+```
 
-```bash
-ip addr
-ip route
-ip neigh
-cat /etc/resolv.conf
-ping -c 1 8.8.8.8
-ping -c 1 google.com
+👉 **Kết quả:**
+- ✅ Reply bình thường → **MẠNG OK**
+- ❌ Request timed out → Không phải DNS, là **lỗi mạng**
+
+### 2️⃣ Kiểm tra DNS có phân giải tên miền không
+```powershell
+ping google.com
+```
+
+👉 **So sánh kết quả:**
+
+| Kết quả | Kết luận |
+| :--- | :--- |
+| Ping IP được, ping domain không được | ✅ **LỖI DNS** |
+| Cả hai không được | ❌ Lỗi mạng |
+| Cả hai được | DNS bình thường |
+
+### 3️⃣ Dùng nslookup (xác định chính xác 100%)
+```powershell
 nslookup google.com
 ```
 
-👉 **Câu hỏi kiểm tra**:
-1.  Gateway của bạn là IP nào?
-2.  DNS server bạn đang dùng là IP nào?
-3.  Nếu xoá Gateway thì lỗi gì xảy ra?
-4.  Nếu đổi DNS sang IP sai thì lỗi gì xảy ra?
+👉 **Nếu là lỗi DNS sẽ thấy:**
+- `DNS request timed out`
+- `server can't find google.com`
+- `No response from server`
 
-> **CÂU CHỐT (RẤT QUAN TRỌNG)**:
-> - **Default Gateway**: Quyết định *"Đi được hay không"*.
-> - **DNS**: Quyết định *"Biết đi đâu"*.
+→ **Kết luận: DNS có vấn đề**
+
+### 4️⃣ Xem DNS server đang dùng
+```powershell
+ipconfig /all
+```
+
+Tìm dòng: `DNS Servers . . . :`
+
+❌ **DNS nhà mạng hay lỗi** (Thường là IP kiểu `192.168.1.1` hoặc `203.xxx.xxx.xxx`)
+
+### 5️⃣ Test nhanh bằng cách đổi DNS
+Đổi sang DNS công cộng:
+
+| DNS | IP |
+| :--- | :--- |
+| Google DNS | `8.8.8.8` / `8.8.4.4` |
+| Cloudflare | `1.1.1.1` / `1.0.0.1` |
+
+Sau đó chạy:
+```powershell
+ipconfig /flushdns
+```
+
+→ Vào lại web
+
+👉 **Nếu vào được → XÁC NHẬN LỖI DNS**
+
+---
+
+## 5. 🧠 CHECKLIST NHANH (NHÌN LÀ BIẾT)
+
+| Hiện tượng | Có phải lỗi DNS? |
+| :--- | :--- |
+| Chỉ không vào được web, app khác OK | ✅ |
+| Ping IP được, ping domain không | ✅ |
+| Đổi DNS là hết | ✅ **100%** |
+| Mất mạng hoàn toàn | ❌ |
+

@@ -44,7 +44,14 @@ export default defineConfig({
                         { text: 'Mô hình OSI', link: '/mang-may-tinh/mo-hinh-osi' },
                         { text: 'NAT & Port Forwarding', link: '/mang-may-tinh/nat-port-forwarding' },
                         { text: 'Hạ tầng mạng (L1-L3)', link: '/mang-may-tinh/phan-1-ly-thuyet' },
-                        { text: 'DNS & Default Gateway', link: '/mang-may-tinh/ly-thuyet/dns-va-gateway' },
+                        {
+                            text: 'DNS & Default Gateway',
+                            collapsed: true,
+                            items: [
+                                { text: 'Phần 1: Kiến thức Cơ bản', link: '/mang-may-tinh/ly-thuyet/dns-va-gateway-co-ban' },
+                                { text: 'Phần 2: Nâng cao & Lab', link: '/mang-may-tinh/ly-thuyet/dns-va-gateway-nang-cao' }
+                            ]
+                        },
                         { text: 'Giao vận mạng (L4-L7)', link: '/mang-may-tinh/phan-2-ly-thuyet' },
                         { text: 'Ứng dụng mạng (L7)', link: '/mang-may-tinh/phan-3-ly-thuyet' },
 
